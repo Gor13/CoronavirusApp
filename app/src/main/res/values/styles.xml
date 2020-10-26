@@ -1,0 +1,52 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <!-- Light/Day mode theme. -->
+    <style name="LightTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">#E1E1E1</item>
+        <item name="colorPrimaryDark">#c7c7c7</item>
+        <item name="colorAccent">#c7c7c7</item>
+
+        <item name="backgroundcolor">#c7c7c7</item>
+        <item name="cardbackgroundcolor">#f5f5f5</item>
+        <item name="textcolor">@android:color/black</item>
+        <item name="titleTextColor">@android:color/holo_red_light</item>
+        <item name="buttoncolor">#938450</item>
+
+        <item name="shadowcolor">#FFFFFF</item>
+
+        <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
+    </style>
+
+    <!-- Dark/Night mode theme. -->
+    <style name="DarkTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">#212121</item>
+        <item name="colorPrimaryDark">#484848</item>
+        <item name="colorAccent">#484848</item>
+
+        <item name="backgroundcolor">#424242</item>
+        <item name="cardbackgroundcolor">#1b1b1b</item>
+        <item name="textcolor">@android:color/white</item>
+        <item name="titleTextColor">@android:color/holo_red_light</item>
+        <item name="buttoncolor">#938450</item>
+
+        <item name="shadowcolor">#000000</item>
+
+        <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
+    </style>
+
+    <style name="WindowAnimationTransition">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+
+    <style name="general_text_style">
+        <item name="android:shadowColor">?attr/shadowcolor</item>
+        <item name="android:shadowRadius">10</item>
+        <item name="android:textColor">?attr/textcolor</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:text">@string/example_string</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+</resources>

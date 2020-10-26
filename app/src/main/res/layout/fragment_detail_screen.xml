@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundcolor">
+
+    <ImageView
+        android:id="@+id/detailIBackgroundIV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/picture_with_country"
+        android:scaleType="centerCrop"
+        android:src="@drawable/city"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/flagImageView"
+        android:layout_width="160dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/flag_of_country"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="VectorDrawableCompat" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/detailhorizguideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintGuide_percent="0.2"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/detailverticalguideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.10"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/nameTV"
+        style="@style/general_text_style"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:textSize="32sp"
+        app:layout_constraintBottom_toTopOf="@+id/detailhorizguideline"
+        app:layout_constraintEnd_toStartOf="@+id/flagImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@tools:sample/cities" />
+
+    <TextView
+        android:id="@+id/casesLTV"
+        style="@style/general_text_style"
+        android:layout_marginTop="32dp"
+        android:text="@string/cases"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="@id/detailverticalguideline"
+        app:layout_constraintTop_toBottomOf="@+id/detailhorizguideline" />
+
+    <TextView
+        android:id="@+id/casesTV"
+        style="@style/general_text_style"
+        android:layout_marginStart="32dp"
+        android:textSize="@dimen/value_text_size"
+        app:layout_constraintBottom_toBottomOf="@+id/casesLTV"
+        app:layout_constraintStart_toEndOf="@+id/casesLTV"
+        app:layout_constraintTop_toTopOf="@+id/casesLTV" />
+
+    <TextView
+        android:id="@+id/newCasesLTV"
+        style="@style/general_text_style"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/newcases"
+        android:textSize="@dimen/new_label_text_size"
+        app:layout_constraintStart_toStartOf="@id/detailverticalguideline"
+        app:layout_constraintTop_toBottomOf="@+id/casesTV" />
+
+    <TextView
+        android:id="@+id/newCasesTV"
+        style="@style/general_text_style"
+        android:layout_marginStart="32dp"
+        android:textSize="@dimen/new_value_text_size"
+        app:layout_constraintBottom_toBottomOf="@+id/newCasesLTV"
+        app:layout_constraintStart_toEndOf="@+id/newCasesLTV"
+        app:layout_constraintTop_toTopOf="@+id/newCasesLTV" />
+
+    <TextView
+        android:id="@+id/deathsLTV"
+        style="@style/general_text_style"
+        android:layout_marginTop="30dp"
+        android:text="@string/deaths"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="@id/detailverticalguideline"
+        app:layout_constraintTop_toBottomOf="@+id/newCasesTV" />
+
+    <TextView
+        android:id="@+id/deathsTV"
+        style="@style/general_text_style"
+        android:layout_marginStart="32dp"
+        android:textSize="@dimen/value_text_size"
+        app:layout_constraintBottom_toBottomOf="@+id/deathsLTV"
+        app:layout_constraintStart_toEndOf="@+id/deathsLTV"
+        app:layout_constraintTop_toTopOf="@+id/deathsLTV" />
+
+    <TextView
+        android:id="@+id/newDeathsLTV"
+        style="@style/general_text_style"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/newdeaths"
+        android:textSize="@dimen/new_label_text_size"
+        app:layout_constraintStart_toStartOf="@id/detailverticalguideline"
+        app:layout_constraintTop_toBottomOf="@+id/deathsTV" />
+
+    <TextView
+        android:id="@+id/newDeathsTV"
+        style="@style/general_text_style"
+        android:layout_marginStart="32dp"
+        android:textSize="@dimen/new_value_text_size"
+        app:layout_constraintBottom_toBottomOf="@+id/newDeathsLTV"
+        app:layout_constraintStart_toEndOf="@+id/newDeathsLTV"
+        app:layout_constraintTop_toTopOf="@+id/newDeathsLTV" />
+
+    <TextView
+        android:id="@+id/recoveredLTV"
+        style="@style/general_text_style"
+        android:layout_marginTop="30dp"
+        android:text="@string/recovered"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="@id/detailverticalguideline"
+        app:layout_constraintTop_toBottomOf="@+id/newDeathsTV" />
+
+    <TextView
+        android:id="@+id/recoveredTV"
+        style="@style/general_text_style"
+        android:layout_marginStart="32dp"
+        android:textSize="@dimen/value_text_size"
+        app:layout_constraintBottom_toBottomOf="@+id/recoveredLTV"
+        app:layout_constraintStart_toEndOf="@+id/recoveredLTV"
+        app:layout_constraintTop_toTopOf="@+id/recoveredLTV" />
+
+    <TextView
+        android:id="@+id/newRecoveredLTV"
+        style="@style/general_text_style"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/newrecovered"
+        android:textSize="@dimen/new_label_text_size"
+        app:layout_constraintStart_toStartOf="@id/detailverticalguideline"
+        app:layout_constraintTop_toBottomOf="@+id/recoveredTV" />
+
+    <TextView
+        android:id="@+id/newRecoveredTV"
+        style="@style/general_text_style"
+        android:layout_marginStart="32dp"
+        android:textSize="@dimen/new_value_text_size"
+        app:layout_constraintBottom_toBottomOf="@+id/newRecoveredLTV"
+        app:layout_constraintStart_toEndOf="@+id/newRecoveredLTV"
+        app:layout_constraintTop_toTopOf="@+id/newRecoveredLTV" />
+
+    <TextView
+        android:id="@+id/updatedLTV"
+        style="@style/general_text_style"
+        android:layout_marginTop="30dp"
+        android:text="@string/updated"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="@id/detailverticalguideline"
+        app:layout_constraintTop_toBottomOf="@+id/newRecoveredTV" />
+
+    <TextView
+        android:id="@+id/updatedTV"
+        style="@style/general_text_style"
+        android:layout_marginStart="32dp"
+        android:textSize="@dimen/value_text_size"
+        app:layout_constraintBottom_toBottomOf="@+id/updatedLTV"
+        app:layout_constraintStart_toEndOf="@+id/updatedLTV"
+        app:layout_constraintTop_toTopOf="@+id/updatedLTV" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
