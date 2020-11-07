@@ -2,35 +2,38 @@ package com.hardzei.coronavirusapp.data.repository
 
 import android.util.Log
 import androidx.sqlite.db.SimpleSQLiteQuery
-import com.hardzei.coronavirusapp.data.api.ApiFactory
+import com.hardzei.coronavirusapp.data.api.ApiService
 import com.hardzei.coronavirusapp.data.database.CountryDao
+import com.hardzei.coronavirusapp.data.entity.coronastatistic.CountriesRequest
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.Country
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.Global
-import com.hardzei.coronavirusapp.data.entity.imagesofcountries.Photo
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import com.hardzei.coronavirusapp.data.entity.imagesofcountries.ImageOfCountryRequest
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 
-class Repository(private val countryDao: CountryDao) {
+class Repository(private val countryDao: CountryDao) : BaseRepository<Repository.Params, Repository.Result>() {
 
     var onStatisticChangeListener: OnStatisticChangeListener? = null
     var onDetailCountryChangeListener: OnDetailCountryChangeListener? = null
 
     fun getSortedCountries(sortedBy: String) =
-        CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.IO).launch {
 
-            onStatisticChangeListener?.onSuccess(
-                countryDao
-                    .getAllCountrisSortedBy(
-                        SimpleSQLiteQuery(
-                            "SELECT * FROM country_table ORDER BY $sortedBy"
-                        )
-                    ),
-                countryDao.getGlobal()
-            )
-        }
+                onStatisticChangeListener?.onSuccess(
+                        countryDao
+                                .getAllCountrisSortedBy(
+                                        SimpleSQLiteQuery(
+                                                "SELECT * FROM country_table ORDER BY $sortedBy"
+                                        )
+                                ),
+                        countryDao.getGlobal()
+                )
+            }
 
     fun getCountryById(id: Int) = CoroutineScope(Dispatchers.IO).launch {
         onDetailCountryChangeListener?.onGetCountrySuccess(countryDao.getCountryById(id))
@@ -46,73 +49,79 @@ class Repository(private val countryDao: CountryDao) {
 
     private fun insertGlobal(global: Global) = CoroutineScope(Dispatchers.IO).launch {
         countryDao.insertGlobal(global)
-        getSortedCountries("id ASC")
     }
 
     private fun deleteGlobal() = CoroutineScope(Dispatchers.IO).launch {
         countryDao.deleteGlobal()
     }
 
-    fun loadDataWithCountriesStatistic() = ApiFactory
-        .apiServiceForCoronastatistic
-        .getCountriesFromJson()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe({
-            Log.d("TEST_Rep_load_sec", it.countries.toString())
-            deleteAll()
-            deleteGlobal()
-            insertAll(it.countries)
-            insertGlobal(it.global)
-            onStatisticChangeListener?.onError("success")
-        }, {
-            Log.d("TEST_Rep ERROR-1000", it.toString())
-            onStatisticChangeListener?.onError("${it.message}")
-        })
+    override suspend fun loadDataWithCountriesStatistic(params: Params): Result {
+        var status = "Faild"
+        var response: Response<CountriesRequest>? = null
+        val retrofitCountries = Retrofit
+                .Builder()
+                .baseUrl(params.url)
+                .addConverterFactory(MoshiConverterFactory.create())
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
+                .build()
+                .create(ApiService::class.java)
+        try {
+            response = retrofitCountries
+                    .getCountriesFromJson()
+                    .await()
 
-    fun loadDataWithImagesOfCountry(requestToSearch: String) = ApiFactory
-        .apiServiceForCountryImages
-        .getCountriesImages(text = requestToSearch)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe({
+            Log.d("TEST_loadata_countr2", response.body().toString() + "-" + params.url)
 
-            Log.d("TEST_Rep_load_imags", it.toString())
+            status = "Success"
 
-            val maxSize: Int
-            val currentSize = it.photos?.photo?.size ?: 0
-            when (currentSize) {
-                in -1..0 -> throw Exception("We don't have images with this country :-(")
-                in 1..3 -> maxSize = currentSize
-                else -> maxSize = 4
+            getSortedCountries("id ASC") // get sorted statistic from DB after fill the DB
+
+        } catch (ex: Exception) {
+            Log.d("TEST_loadata_countr1", ex.message.toString())
+        }
+
+        when (status) {
+            "Success" -> {
+                deleteAll()
+                deleteGlobal()
+                response?.body()?.let {
+                    insertAll(it.countries)
+                    insertGlobal(it.global)
+                }
             }
+            else -> status = "Faild"
+        }
 
-            onDetailCountryChangeListener?.onLoadLinksSuccess(it.photos?.photo?.subList(0, maxSize))
-        }, {
+        Log.d("TEST_loadata_countr3", status)
 
-            Log.d("TEST_Rep ERROR-2000", it.toString())
-
-            onDetailCountryChangeListener?.onError("${it.message}")
-        })
-
-    interface OnStatisticChangeListener {
-        fun onSuccess(
-            allCountries: List<Country>,
-            global: List<Global>
-        )
-
-        fun onError(errors: String)
+        return Result(null, status)
     }
 
-    interface OnDetailCountryChangeListener {
-        fun onGetCountrySuccess(
-            country: Country
-        )
+    class Params(val request: String, val url: String)
+    data class Result(val links: ImageOfCountryRequest?, val status: String)
 
-        fun onLoadLinksSuccess(
-            links: List<Photo>?
-        )
+    override suspend fun loadListWithLinksOfImages(params: Params): Result {
+        var result: Response<ImageOfCountryRequest>? = null
+        var status = "Faild"
+        val retrofitLinks = Retrofit
+                .Builder()
+                .baseUrl(params.url)
+                .addConverterFactory(MoshiConverterFactory.create())
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
+                .build()
+                .create(ApiService::class.java)
+        try {
+            result = retrofitLinks
+                    .getCountriesImages(text = params.request)
+                    .await()
+            status = "Success"
+        } catch (ex: Exception) {
+            Log.d("TEST_loadata_links1", ex.message.toString())
+        }
 
-        fun onError(errors: String)
+        Log.d("TEST_loadata_links2", result?.body().toString())
+
+        Log.d("TEST_loadata_links3", status)
+        return Result(result?.body(), status)
     }
 }

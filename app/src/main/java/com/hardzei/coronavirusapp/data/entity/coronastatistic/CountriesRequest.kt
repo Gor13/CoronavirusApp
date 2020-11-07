@@ -1,18 +1,14 @@
 package com.hardzei.coronavirusapp.data.entity.coronastatistic
 
-import com.google.gson.annotations.Expose
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 
-class CountriesRequest(
-    @SerializedName("Global")
-    @Expose
-    var global: Global,
+data class CountriesRequest(
+        @field:Json(name = "Global")
+        var global: Global,
 
-    @SerializedName("Countries")
-    @Expose
-    var countries: List<Country>,
+        @field:Json(name = "Countries")
+        var countries: List<Country>,
 
-    @SerializedName("Date")
-    @Expose
-    var date: String
+        @field:Json(name = "Date")
+        var date: String
 )

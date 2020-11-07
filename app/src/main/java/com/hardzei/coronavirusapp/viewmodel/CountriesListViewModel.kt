@@ -6,12 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.Country
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.Global
+import com.hardzei.coronavirusapp.model.BaseModel
 import com.hardzei.coronavirusapp.model.CountriesModel
 import io.reactivex.disposables.CompositeDisposable
 
-class CountriesListViewModel(private val countriesModel: CountriesModel) : ViewModel() {
-
-    private var compositeDisposable = CompositeDisposable()
+class CountriesListViewModel(private val countriesModel: CountriesModel) : BaseViewModel() {
 
     private var allCountriesMut: MutableLiveData<List<Country>> = MutableLiveData()
     val allCountries: LiveData<List<Country>>
@@ -26,7 +25,7 @@ class CountriesListViewModel(private val countriesModel: CountriesModel) : ViewM
         get() = errorsMut
 
     init {
-        countriesModel.onStatisticChangeListener = object : CountriesModel
+        countriesModel.onStatisticChangeListener = object : BaseModel
         .OnStatisticChangeListener {
             override fun onSuccess(
                 allCountries: List<Country>,
@@ -41,20 +40,19 @@ class CountriesListViewModel(private val countriesModel: CountriesModel) : ViewM
             }
         }
 
-        loadData()
     }
 
     fun getSortedCountries(sortBy: String) {
         Log.d("TEST_VM", "get sorted country")
         countriesModel.getSortedCountries(sortBy)
+        loadData()
     }
 
     fun loadData() {
-        compositeDisposable.addAll(countriesModel.loadData())
+        doWork {
+            countriesModel.LoadData()
+        }
     }
 
-    override fun onCleared() {
-        compositeDisposable.dispose()
-        super.onCleared()
-    }
+
 }

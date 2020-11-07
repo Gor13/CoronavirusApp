@@ -2,35 +2,27 @@ package com.hardzei.coronavirusapp.data.entity.coronastatistic
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.gson.annotations.Expose
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 
 @Entity(tableName = "global_table")
 data class Global(
 
-    @SerializedName("NewConfirmed")
-    @Expose
+    @field:Json(name = "NewConfirmed")
     var newConfirmed: Int,
 
     @PrimaryKey
-    @SerializedName("TotalConfirmed")
-    @Expose
+    @field:Json(name = "TotalConfirmed")
     var totalConfirmed: Int,
 
-    @SerializedName("NewDeaths")
-    @Expose
+    @field:Json(name = "NewDeaths")
     var newDeaths: Int,
 
-    @SerializedName("TotalDeaths")
-    @Expose
+    @field:Json(name = "TotalDeaths")
     var totalDeaths: Int,
 
-    @SerializedName("NewRecovered")
-    @Expose
+    @field:Json(name = "NewRecovered")
     var newRecovered: Int,
 
-    @SerializedName("TotalRecovered")
-    @Expose
+    @field:Json(name = "TotalRecovered")
     var totalRecovered: Int
-
 )

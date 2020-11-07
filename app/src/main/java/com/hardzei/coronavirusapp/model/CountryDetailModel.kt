@@ -1,17 +1,21 @@
 package com.hardzei.coronavirusapp.model
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.Country
 import com.hardzei.coronavirusapp.data.entity.imagesofcountries.Photo
+import com.hardzei.coronavirusapp.data.repository.BaseRepository
 import com.hardzei.coronavirusapp.data.repository.Repository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
-class CountryDetailModel(private val repository: Repository) {
+
+class CountryDetailModel(private val repository: Repository)
+    : BaseModel<CountryDetailModel.Params, CountryDetailModel.Result>() {
+
+
+    companion object {
+        private const val CONST_URL = "https://www.flickr.com/services/"
+    }
 
     var onDetailCountryChangeListener: OnDetailCountryChangeListener? = null
     private var country: Country? = null
@@ -20,29 +24,17 @@ class CountryDetailModel(private val repository: Repository) {
 
     init {
         repository.onDetailCountryChangeListener =
-            object : Repository
-            .OnDetailCountryChangeListener {
-                override fun onGetCountrySuccess(country: Country) {
-                    this@CountryDetailModel.country = country
-                    onDetailCountryChangeListener?.onGetCountrySuccess(country)
-                }
-
-                override fun onLoadLinksSuccess(links: List<Photo>?) {
-                    Log.d("TEST_CDModel", links.toString())
-                    if (b == null) {
-                        b = CoroutineScope(Dispatchers.IO).launch {
-                            while (true) {
-                                getImageUrl(links)
-                                delay(5000)
-                            }
-                        }
+                object : BaseRepository
+                .OnDetailCountryChangeListener {
+                    override fun onGetCountrySuccess(country: Country) {
+                        this@CountryDetailModel.country = country
+                        onDetailCountryChangeListener?.onGetCountrySuccess(country)
+                    }
+                    override fun onError(errors: String) {
+                        onDetailCountryChangeListener?.onError(errors)
                     }
                 }
 
-                override fun onError(errors: String) {
-                    onDetailCountryChangeListener?.onError(errors)
-                }
-            }
     }
 
     fun stopCoroutine() {
@@ -51,10 +43,6 @@ class CountryDetailModel(private val repository: Repository) {
     }
 
     fun getCountryById(id: Int) = repository.getCountryById(id)
-
-
-    fun loadData() = repository
-        .loadDataWithImagesOfCountry("${country?.country}+capital")
 
     private fun setImage(url: String) {
         onDetailCountryChangeListener?.onGetLinkSuccess(url)
@@ -86,15 +74,30 @@ class CountryDetailModel(private val repository: Repository) {
         }
     }
 
-    interface OnDetailCountryChangeListener {
-        fun onGetCountrySuccess(
-            country: Country
-        )
+    class Params()
+    data class Result(val result: String)
 
-        fun onGetLinkSuccess(
-            link: String
-        )
+    override suspend fun LoadData(): Result {
 
-        fun onError(errors: String)
+        val result = "Success"
+        val listWithLinks = repository
+                .loadListWithLinksOfImages(Repository.Params("${country?.country}+capital", CONST_URL))
+                .links?.photos?.photo
+
+
+        Log.d("TEST_CDModel", listWithLinks.toString())
+
+        if (b == null) {
+            b = CoroutineScope(Dispatchers.IO).launch {
+                val maxSize = 4
+                while (true) {
+                    listWithLinks.let {
+                        getImageUrl(it?.subList(0, maxSize))
+                        delay(5000)
+                    }
+                }
+            }
+        }
+        return Result(result)
     }
 }
