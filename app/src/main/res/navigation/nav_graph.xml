@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/fragmentMainScreen">
+
+    <fragment
+        android:id="@+id/fragmentMainScreen"
+        android:name="com.hardzei.coronavirusapp.view.screens.countrieslistscreen.CountriesListScreenFragment"
+        android:label="@string/statistic_in_world"
+        tools:layout="@layout/fragment_countries_list_screen">
+
+        <action
+            android:id="@+id/action_fragmentMainScreen_to_fragmentDetaiScreen"
+            app:destination="@id/fragmentDetailScreen"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popEnterAnim="@anim/fragment_fade_enter"
+            app:popExitAnim="@anim/fragment_fade_exit" />
+
+        <action
+            android:id="@+id/action_fragmentMainScreent_to_helpViewPagerFragment"
+            app:destination="@id/viewPagerHelpFragment"
+            app:enterAnim="@anim/fragment_close_enter"
+            app:exitAnim="@anim/fragment_close_exit">
+
+            <argument
+                android:name="fromWhere"
+                android:defaultValue="first fragment" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragmentDetailScreen"
+        android:name="com.hardzei.coronavirusapp.view.screens.detailcountryscreen.DetailCountryScreenFragment"
+        android:label="@string/country"
+        tools:layout="@layout/fragment_detail_screen">
+        <argument
+            android:name="countryId"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/viewPagerHelpFragment"
+        android:name="com.hardzei.coronavirusapp.view.screens.helpscreen.ViewPagerHelpFragment"
+        tools:layout="@layout/fragment_help_view_pager">
+
+        <action
+            android:id="@+id/action_helpViewPagerFragment_to_fragmentMainScreent"
+            app:destination="@id/fragmentMainScreen"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsScreenFragment"
+        android:label="@string/Settings"
+        android:name="com.hardzei.coronavirusapp.view.screens.settingscreen.SettingsScreenFragment" />
+
+    <!--Global action-->
+    <action
+        android:id="@+id/open_settings_screen_fragment"
+        app:destination="@id/settingsScreenFragment"
+        app:enterAnim="@animator/back_animator"
+        app:exitAnim="@animator/front_animator"
+        app:popEnterAnim="@animator/back_animator"
+        app:popExitAnim="@animator/front_animator" />
+
+</navigation>

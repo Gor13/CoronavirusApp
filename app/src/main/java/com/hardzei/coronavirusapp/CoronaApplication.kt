@@ -7,6 +7,7 @@ import com.hardzei.coronavirusapp.koin.countryDetailModelModule
 import com.hardzei.coronavirusapp.koin.databaseModule
 import com.hardzei.coronavirusapp.koin.detailCountryViewModelModule
 import com.hardzei.coronavirusapp.koin.repositoryModule
+import com.hardzei.coronavirusapp.koin.retrofitModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -18,6 +19,7 @@ class CoronaApplication : Application() {
             androidLogger()
             androidContext(this@CoronaApplication)
             modules(
+                retrofitModule,
                 databaseModule,
                 repositoryModule,
                 countriesListViewModelModule,

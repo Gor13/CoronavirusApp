@@ -3,12 +3,10 @@ package com.hardzei.coronavirusapp.viewmodel
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.Country
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.Global
 import com.hardzei.coronavirusapp.model.BaseModel
 import com.hardzei.coronavirusapp.model.CountriesModel
-import io.reactivex.disposables.CompositeDisposable
 
 class CountriesListViewModel(private val countriesModel: CountriesModel) : BaseViewModel() {
 
@@ -26,12 +24,12 @@ class CountriesListViewModel(private val countriesModel: CountriesModel) : BaseV
 
     init {
         countriesModel.onStatisticChangeListener = object : BaseModel
-        .OnStatisticChangeListener {
-            override fun onSuccess(
-                allCountries: List<Country>,
-                global: List<Global>
-            ) {
+            .OnStatisticChangeListener {
+            override fun onSuccessWithList(allCountries: List<Country>) {
                 allCountriesMut.postValue(allCountries)
+            }
+
+            override fun onSuccessWithGlobal(global: List<Global>) {
                 globalMut.postValue(global)
             }
 
@@ -39,20 +37,20 @@ class CountriesListViewModel(private val countriesModel: CountriesModel) : BaseV
                 errorsMut.postValue(errors)
             }
         }
-
     }
 
     fun getSortedCountries(sortBy: String) {
+
         Log.d("TEST_VM", "get sorted country")
+
         countriesModel.getSortedCountries(sortBy)
-        loadData()
     }
 
     fun loadData() {
         doWork {
-            countriesModel.LoadData()
+            val result = countriesModel.loadData()
+
+            Log.d("TEST_VM_Countries", result.status)
         }
     }
-
-
 }

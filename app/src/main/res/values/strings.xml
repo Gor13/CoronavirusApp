@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">CoronavirusApp</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="example_string">124413</string>
     <string name="cases">Cases:</string>
@@ -12,19 +11,16 @@
     <string name="recovered">Recovered:</string>
     <string name="newrecovered">New recovered:</string>
     <string name="seriouscritical">Serious, critical:</string>
-    <string name="tests">Tests:</string>
-    <string name="on_million">Value for million population:</string>
-    <string name="population">Population:</string>
 
     <string name="update">Last Up:</string>
     <string name="statistic_in_world">In the world</string>
     <string name="search">Search</string>
     <string name="sort">Sorted by:</string>
-    <string name="enter_the_country">Enter the country</string>
     <string name="Settings">Settings</string>
     <string name="picture_with_country">Picture with country</string>
     <string name="flag_of_country">Flag of country</string>
     <string name="updated">Updated:</string>
+    <string name="Help">Help</string>
 
     <string-array name="sortItems">
         <item>alphabet</item>
@@ -32,23 +28,30 @@
         <item>number of deaths</item>
         <item>number of recovered</item>
     </string-array>
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
 
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="background_image">Background image</string>
     <string name="internet_error">\"Internet ERROR: \"</string>
     <string name="update_label_for_batton">Update</string>
-    <string name="click_to_update">Click Update</string>
+    <string name="click_for_update">Click for Update</string>
     <string name="update_success">Data updated.</string>
+    <string name="theme">THEME:</string>
+    <string name="black">BLACK</string>
+    <string name="light">LIGHT</string>
+
+    <string name="skip">Skip</string>
+    <string name="country">In country</string>
+    <string name="update_button">Update button</string>
+    <string name="done">Done</string>
+    <string name="developed_by_hardzei">developed by Hardzei</string>
+    <string name="welcomeing">Welcome to</string>
+    <string name="description_help">Statistic of world and countries.</string>
+    <string name="click_to_get_help">Click to get help about app</string>
+    <string name="click_for_update_statistic">Click for update statistic</string>
+    <string name="click_to_open_settings_menu">Click to open settings menu</string>
+    <string name="click_on_type_of_sort">Click on type of sort to change it</string>
+    <string name="click_on_lens">Click on lens to search country</string>
+    <string name="hold_down_the_item">Hold down the item to open detail information about country</string>
+    <string name="thank_you_for_your_attention">Thank you for your attention</string>
+    <string name="thats_all">Thats all</string>
+    <string name="good_health">Good health</string>
 </resources>

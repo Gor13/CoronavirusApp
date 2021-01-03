@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CoronavirusApp</string>
+
+    <string name="example_string">124413</string>
+
+    <string name="cases">Случаи:</string>
+    <string name="newcases">Новые:</string>
+    <string name="deaths">Смертей:</string>
+    <string name="newdeaths">Смертей/сут.:</string>
+    <string name="recovered">Выздоровели:</string>
+    <string name="newrecovered">Выздоровели/сут.:</string>
+    <string name="seriouscritical">Критические:</string>
+    <string name="statistic_in_world">В мире</string>
+    <string name="update">Обновлено:</string>
+    <string name="search">Поиск</string>
+    <string name="sort">Сортировка:</string>
+    <string name="picture_with_country">Картинка страны</string>
+    <string name="flag_of_country">Флаг страны</string>
+    <string name="updated">Обновлено</string>
+    <string name="click_for_update">Нажмите для загрузки…</string>
+    <string name="update_success">Данные обновлены.</string>
+    <string name="update_label_for_batton">Обновить</string>
+    <string name="internet_error">"Ошибка сети: "</string>
+    <string name="background_image">Фоновое изображение</string>
+
+    <string name="Settings">Настройки</string>
+    <string name="Help">Помощь</string>
+
+    <string-array name="sortItems">
+        <item>алфавит</item>
+        <item>количество случаев</item>
+        <item>количество смертей</item>
+        <item>количество выздоровеших</item>
+    </string-array>
+
+    <string name="theme">ТЕМА:</string>
+    <string name="black">НОЧЬ</string>
+    <string name="light">ДЕНЬ</string>
+
+    <string name="skip">Пропустить</string>
+    <string name="country">В стране</string>
+    <string name="update_button">Кнопка обновить</string>
+    <string name="done">Готово</string>
+    <string name="developed_by_hardzei">Разработчик: Hardzei</string>
+    <string name="welcomeing">Добро пожаловать в</string>
+    <string name="description_help">Статистика в мире и странах</string>
+    <string name="click_to_get_help">Нажмите, чтобы получить помощь по приложению</string>
+    <string name="click_for_update_statistic">Нажмите, чтобы обновить статистику</string>
+    <string name="click_to_open_settings_menu">Нажмите, чтобы вызвать меню настроек</string>
+    <string name="click_on_type_of_sort">Нажмите, чтобы выбрать метод сортировки</string>
+    <string name="click_on_lens">Нажмите на лупу, чтобы воспользоваться поисковиком</string>
+    <string name="hold_down_the_item">Нажмите длительно на элемент, чтобы открыть подробную статистику о текущей стране</string>
+    <string name="thank_you_for_your_attention">Спасибо за внимание</string>
+    <string name="thats_all">Это всё</string>
+    <string name="good_health">Не болейте</string>
+</resources>

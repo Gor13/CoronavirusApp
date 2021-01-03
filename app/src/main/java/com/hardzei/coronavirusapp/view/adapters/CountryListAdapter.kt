@@ -12,10 +12,10 @@ import com.hardzei.coronavirusapp.R
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.Country
 import com.hardzei.coronavirusapp.view.formatToStringWithDiv
 import kotlinx.android.synthetic.main.list_item_for_country.view.*
-
+import java.util.Locale
 
 class CountryListAdapter(
-    context: Context?
+    context: Context?,
 ) : RecyclerView.Adapter<CountryListAdapter.CountryViewHolder>(), Filterable {
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
@@ -66,13 +66,9 @@ class CountryListAdapter(
             } else {
                 for (country in countriesAll) {
                     if (country
-                            .country
-                            .toLowerCase()
-                            .contains(
-                                constraint
-                                    .toString()
-                                    .toLowerCase()
-                            )
+                        .country
+                        .toLowerCase(Locale.ROOT)
+                        .contains(constraint.toString().toLowerCase(Locale.ROOT))
                     ) {
                         filteredCountries.add(country)
                     }
@@ -88,6 +84,7 @@ class CountryListAdapter(
         // run on ui thread
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
             countries.clear()
+            @Suppress("UNCHECKED_CAST")
             countries.addAll(results?.values as Collection<Country>)
             notifyDataSetChanged()
         }

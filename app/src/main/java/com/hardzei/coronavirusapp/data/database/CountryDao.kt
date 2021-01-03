@@ -1,6 +1,5 @@
 package com.hardzei.coronavirusapp.data.database
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -14,9 +13,6 @@ import com.hardzei.coronavirusapp.data.entity.coronastatistic.Global
 interface CountryDao {
     @RawQuery(observedEntities = arrayOf(Country::class))
     suspend fun getAllCountrisSortedBy(query: SupportSQLiteQuery): List<Country>
-
-//    @RawQuery(observedEntities = arrayOf(Country::class))
-//    suspend fun getAllCountrisSortedByTest(query: SupportSQLiteQuery): LiveData<List<Country>>
 
     @Query("SELECT * FROM country_table WHERE id=:id ")
     suspend fun getCountryById(id: Int): Country

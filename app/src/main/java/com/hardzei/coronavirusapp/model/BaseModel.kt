@@ -3,26 +3,29 @@ package com.hardzei.coronavirusapp.model
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.Country
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.Global
 
-abstract class BaseModel<Params, Result> {
+interface BaseModel<Params, Result> {
 
-    abstract suspend fun LoadData(): Result
+    suspend fun loadData(): Result
 
     interface OnDetailCountryChangeListener {
         fun onGetCountrySuccess(
-                country: Country
+            country: Country,
         )
 
         fun onGetLinkSuccess(
-                link: String
+            link: String,
         )
 
         fun onError(errors: String)
     }
 
     interface OnStatisticChangeListener {
-        fun onSuccess(
-                allCountries: List<Country>,
-                global: List<Global>
+        fun onSuccessWithList(
+            allCountries: List<Country>,
+        )
+
+        fun onSuccessWithGlobal(
+            global: List<Global>,
         )
 
         fun onError(errors: String)

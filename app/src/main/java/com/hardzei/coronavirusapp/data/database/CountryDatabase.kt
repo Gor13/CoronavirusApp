@@ -10,6 +10,7 @@ import com.hardzei.coronavirusapp.data.entity.coronastatistic.Global
 @Database(entities = arrayOf(Country::class, Global::class), version = 1, exportSchema = false)
 abstract class CountryDatabase : RoomDatabase() {
     abstract fun countryDao(): CountryDao
+
     companion object {
         // Singleton prevents multiple instances of database opening at the
         // same time.

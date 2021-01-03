@@ -2,126 +2,173 @@ package com.hardzei.coronavirusapp.data.repository
 
 import android.util.Log
 import androidx.sqlite.db.SimpleSQLiteQuery
-import com.hardzei.coronavirusapp.data.api.ApiService
+import com.hardzei.coronavirusapp.ERROR_STATUS
+import com.hardzei.coronavirusapp.SUCCESS_STATUS
+import com.hardzei.coronavirusapp.UPDATED_STATUS
+import com.hardzei.coronavirusapp.data.api.ApiFactory
 import com.hardzei.coronavirusapp.data.database.CountryDao
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.CountriesRequest
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.Country
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.Global
 import com.hardzei.coronavirusapp.data.entity.imagesofcountries.ImageOfCountryRequest
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 
-class Repository(private val countryDao: CountryDao) : BaseRepository<Repository.Params, Repository.Result>() {
+class Repository(private val countryDao: CountryDao, private val apiFactory: ApiFactory) :
+    BaseRepository<Repository.Params, Repository.Result> {
 
-    var onStatisticChangeListener: OnStatisticChangeListener? = null
-    var onDetailCountryChangeListener: OnDetailCountryChangeListener? = null
+    var onStatisticChangeListener: BaseRepository.OnStatisticChangeListener? = null
+    var onDetailCountryChangeListener: BaseRepository.OnDetailCountryChangeListener? = null
+    private val mutex = Mutex()
 
-    fun getSortedCountries(sortedBy: String) =
-            CoroutineScope(Dispatchers.IO).launch {
-
-                onStatisticChangeListener?.onSuccess(
-                        countryDao
-                                .getAllCountrisSortedBy(
-                                        SimpleSQLiteQuery(
-                                                "SELECT * FROM country_table ORDER BY $sortedBy"
-                                        )
-                                ),
-                        countryDao.getGlobal()
-                )
-            }
+    fun getSortedCountries(sortedBy: String) = CoroutineScope(Dispatchers.IO).launch {
+        mutex.withLock {
+            getAllCountries(sortedBy)
+            getGlobal()
+        }
+    }
 
     fun getCountryById(id: Int) = CoroutineScope(Dispatchers.IO).launch {
         onDetailCountryChangeListener?.onGetCountrySuccess(countryDao.getCountryById(id))
     }
 
-    private fun insertAll(countries: List<Country>) = CoroutineScope(Dispatchers.IO).launch {
-        countryDao.insertAllCountries(countries)
+    private suspend fun getAllCountries(request: String) = CoroutineScope(Dispatchers.IO).launch {
+        var countries = countryDao
+            .getAllCountrisSortedBy(
+                SimpleSQLiteQuery(
+                    "SELECT * FROM country_table ORDER BY $request"
+                )
+            )
+        while (countries.isEmpty()) {
+            delay(DELAY_FOR_DB)
+            countries = countryDao
+                .getAllCountrisSortedBy(
+                    SimpleSQLiteQuery(
+                        "SELECT * FROM country_table ORDER BY $request"
+                    )
+                )
+            Log.d("REPOS", "gALL $countries")
+        }
+        Log.d("REPOS", "gALL $countries")
+        onStatisticChangeListener?.onSuccessWithList(
+            countries
+        )
+        onStatisticChangeListener?.onError(SUCCESS_STATUS)
     }
 
-    private fun deleteAll() = CoroutineScope(Dispatchers.IO).launch {
-        countryDao.deleteAllCountries()
+    private suspend fun getGlobal() = CoroutineScope(Dispatchers.IO).launch {
+        var global = countryDao.getGlobal()
+        while (global.isEmpty()) {
+            delay(DELAY_FOR_DB)
+            global = countryDao.getGlobal()
+            Log.d("REPOS", "gGlob $global")
+        }
+        Log.d("REPOS", "gGlob $global")
+        onStatisticChangeListener?.onSuccessWithGlobal(
+            global
+        )
+        onStatisticChangeListener?.onError(SUCCESS_STATUS)
     }
 
-    private fun insertGlobal(global: Global) = CoroutineScope(Dispatchers.IO).launch {
-        countryDao.insertGlobal(global)
+    private suspend fun updateDB(countries: List<Country>, global: Global) {
+        deleteAll()
+        deleteGlobal()
+        insertAll(countries)
+        insertGlobal(global)
     }
 
-    private fun deleteGlobal() = CoroutineScope(Dispatchers.IO).launch {
-        countryDao.deleteGlobal()
-    }
+    private suspend fun insertAll(countries: List<Country>) =
+        CoroutineScope(Dispatchers.IO).launch {
+            mutex.withLock {
+                countryDao.insertAllCountries(countries)
+                Log.d("REPOS", "iAll")
+            }
+        }
+
+    private suspend fun deleteAll() =
+        CoroutineScope(Dispatchers.IO).launch {
+            mutex.withLock {
+                countryDao.deleteAllCountries()
+                Log.d("REPOS", "dAll")
+            }
+        }
+
+    private suspend fun insertGlobal(global: Global) =
+        CoroutineScope(Dispatchers.IO).launch {
+            mutex.withLock {
+                countryDao.insertGlobal(global)
+                Log.d("REPOS", "iGlob")
+            }
+        }
+
+    private suspend fun deleteGlobal() =
+        CoroutineScope(Dispatchers.IO).launch {
+            mutex.withLock {
+                countryDao.deleteGlobal()
+
+                Log.d("REPOS", "dGlob")
+            }
+        }
 
     override suspend fun loadDataWithCountriesStatistic(params: Params): Result {
-        var status = "Faild"
         var response: Response<CountriesRequest>? = null
-        val retrofitCountries = Retrofit
-                .Builder()
-                .baseUrl(params.url)
-                .addConverterFactory(MoshiConverterFactory.create())
-                .addCallAdapterFactory(CoroutineCallAdapterFactory())
-                .build()
-                .create(ApiService::class.java)
+        var status: String
         try {
-            response = retrofitCountries
-                    .getCountriesFromJson()
-                    .await()
+            response = apiFactory
+                .apiServiceForCoronastatistic
+                .getCountriesFromJson()
+                .await()
 
-            Log.d("TEST_loadata_countr2", response.body().toString() + "-" + params.url)
+            Log.d("TEST_loadata_countr2", response.body().toString())
 
-            status = "Success"
-
-            getSortedCountries("id ASC") // get sorted statistic from DB after fill the DB
-
+            onStatisticChangeListener?.onError(UPDATED_STATUS)
+            status = SUCCESS_STATUS
         } catch (ex: Exception) {
+
             Log.d("TEST_loadata_countr1", ex.message.toString())
+
+            onStatisticChangeListener?.onError(ex.message.toString())
+            status = ERROR_STATUS
         }
 
-        when (status) {
-            "Success" -> {
-                deleteAll()
-                deleteGlobal()
-                response?.body()?.let {
-                    insertAll(it.countries)
-                    insertGlobal(it.global)
-                }
-            }
-            else -> status = "Faild"
+        response?.body()?.let {
+            updateDB(it.countries, it.global)
         }
-
-        Log.d("TEST_loadata_countr3", status)
-
         return Result(null, status)
     }
 
-    class Params(val request: String, val url: String)
-    data class Result(val links: ImageOfCountryRequest?, val status: String)
+    class Params(val request: String)
+    data class Result(val links: List<Any>?, val status: String)
 
     override suspend fun loadListWithLinksOfImages(params: Params): Result {
         var result: Response<ImageOfCountryRequest>? = null
-        var status = "Faild"
-        val retrofitLinks = Retrofit
-                .Builder()
-                .baseUrl(params.url)
-                .addConverterFactory(MoshiConverterFactory.create())
-                .addCallAdapterFactory(CoroutineCallAdapterFactory())
-                .build()
-                .create(ApiService::class.java)
+        var status: String
         try {
-            result = retrofitLinks
-                    .getCountriesImages(text = params.request)
-                    .await()
-            status = "Success"
+            result = apiFactory
+                .apiServiceForCountryImages
+                .getCountriesImages(text = params.request)
+                .await()
+            onDetailCountryChangeListener?.onError(SUCCESS_STATUS)
+            status = SUCCESS_STATUS
         } catch (ex: Exception) {
+
             Log.d("TEST_loadata_links1", ex.message.toString())
+
+            onDetailCountryChangeListener?.onError(ex.message.toString())
+            status = ERROR_STATUS
         }
 
         Log.d("TEST_loadata_links2", result?.body().toString())
 
-        Log.d("TEST_loadata_links3", status)
-        return Result(result?.body(), status)
+        return Result(result?.body()?.photos?.photo, status)
+    }
+
+    private companion object {
+        const val DELAY_FOR_DB = 50L
     }
 }

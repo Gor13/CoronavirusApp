@@ -1,28 +1,28 @@
 package com.hardzei.coronavirusapp.model
 
 import android.util.Log
+import com.hardzei.coronavirusapp.SORTED_BY_ALPHABET
+import com.hardzei.coronavirusapp.SUCCESS_STATUS
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.Country
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.Global
 import com.hardzei.coronavirusapp.data.repository.BaseRepository
 import com.hardzei.coronavirusapp.data.repository.Repository
 
-class CountriesModel(private val repository: Repository) : BaseModel<CountriesModel.Params, CountriesModel.Result>() {
+class CountriesModel(private val repository: Repository) :
+    BaseModel<CountriesModel.Params, CountriesModel.Result> {
 
-    private var sortedBy = "in ASC"
+    private var sortedBy = SORTED_BY_ALPHABET
 
-    companion object {
-        private const val CONST_URL = "https://api.covid19api.com/"
-    }
-
-    var onStatisticChangeListener: OnStatisticChangeListener? = null
+    var onStatisticChangeListener: BaseModel.OnStatisticChangeListener? = null
 
     init {
         repository.onStatisticChangeListener = object : BaseRepository.OnStatisticChangeListener {
-            override fun onSuccess(
-                    allCountries: List<Country>,
-                    global: List<Global>
-            ) {
-                onStatisticChangeListener?.onSuccess(allCountries, global)
+            override fun onSuccessWithList(allCountries: List<Country>) {
+                onStatisticChangeListener?.onSuccessWithList(allCountries)
+            }
+
+            override fun onSuccessWithGlobal(global: List<Global>) {
+                onStatisticChangeListener?.onSuccessWithGlobal(global)
             }
 
             override fun onError(errors: String) {
@@ -37,14 +37,21 @@ class CountriesModel(private val repository: Repository) : BaseModel<CountriesMo
         sortedBy = sortByFromActivity
     }
 
+    class Params
+    data class Result(val status: String)
 
-    class Params()
-    data class Result(val result: String)
-
-    override suspend fun LoadData(): Result {
-        return Result(repository
-                .loadDataWithCountriesStatistic(Repository
-                        .Params(sortedBy, CONST_URL)).status)
+    override suspend fun loadData(): Result {
+        val result = Result(
+            repository
+                .loadDataWithCountriesStatistic(
+                    Repository
+                        .Params(sortedBy)
+                ).status
+        )
+        if (result.status == SUCCESS_STATUS) {
+            Log.d("TEST_CountrModel", SUCCESS_STATUS)
+            repository.getSortedCountries(sortedBy)
+        }
+        return result
     }
-
 }

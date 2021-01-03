@@ -4,4 +4,9 @@
     <dimen name="value_text_size">20sp</dimen>
     <dimen name="new_label_text_size">20sp</dimen>
     <dimen name="new_value_text_size">16sp</dimen>
+    <dimen name="text_size_20">20sp</dimen>
+    <dimen name="indicator_size">6dp</dimen>
+    <dimen name="tab_padding_start">8dp</dimen>
+    <dimen name="tab_padding_end">8dp</dimen>
+    <dimen name="size_8dp">8dp</dimen>
 </resources>

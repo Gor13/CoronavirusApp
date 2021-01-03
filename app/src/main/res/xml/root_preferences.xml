@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <EditTextPreference android:title="" />
-    <EditTextPreference android:title="THEME:" />
+    <EditTextPreference android:title="@string/theme" />
     <CheckBoxPreference
         android:key="black_theme"
-        android:title="BLACK" />
+        android:title="@string/black" />
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="light_theme"
-        android:title="LIGHT" />
+        android:title="@string/light" />
 </PreferenceScreen>

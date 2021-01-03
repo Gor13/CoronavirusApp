@@ -24,5 +24,4 @@ data class Photos(
     @Expose
     var photo: List<Photo>? =
         null
-
 )

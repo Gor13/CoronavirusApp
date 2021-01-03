@@ -1,8 +1,8 @@
 package com.hardzei.coronavirusapp.data.api
 
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 object ApiFactory {
 
@@ -12,12 +12,14 @@ object ApiFactory {
         "https://www.flickr.com/services/"
 
     private fun <T> createService(baseUrl: String, typeParameterClass: Class<T>): T {
-        val retrofitCoronaStatistic = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        val retrofit = Retrofit
+            .Builder()
             .baseUrl(baseUrl)
+            .addConverterFactory(MoshiConverterFactory.create())
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .build()
-        return retrofitCoronaStatistic.create(typeParameterClass)
+
+        return retrofit.create(typeParameterClass)
     }
 
     val apiServiceForCoronastatistic = createService(BASE_URL_FOR_STATISTIC, ApiService::class.java)

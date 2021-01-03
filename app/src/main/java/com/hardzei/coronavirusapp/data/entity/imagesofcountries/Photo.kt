@@ -39,5 +39,4 @@ data class Photo(
     @SerializedName("isfamily")
     @Expose
     var isfamily: Int
-
 )

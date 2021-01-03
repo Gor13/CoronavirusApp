@@ -1,12 +1,11 @@
 package com.hardzei.coronavirusapp.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.hardzei.coronavirusapp.data.entity.coronastatistic.Country
 import com.hardzei.coronavirusapp.model.BaseModel
 import com.hardzei.coronavirusapp.model.CountryDetailModel
-import io.reactivex.disposables.CompositeDisposable
 
 class DetailCountryViewModel(private val countryDetailModel: CountryDetailModel) : BaseViewModel() {
 
@@ -46,18 +45,10 @@ class DetailCountryViewModel(private val countryDetailModel: CountryDetailModel)
         countryDetailModel.stopCoroutine()
     }
 
-//    private fun loadData1() {
-//        compositeDisposable.addAll(countryDetailModel.loadData())
-//    }
-
-//    override fun onCleared() {
-//        compositeDisposable.dispose()
-//        super.onCleared()
-//    }
-
     private fun loadData() {
-       doWork {
-         countryDetailModel.LoadData()
-       }
+        doWork {
+            val result = countryDetailModel.loadData()
+            Log.d("CountrDetViewMod", result.result)
+        }
     }
 }

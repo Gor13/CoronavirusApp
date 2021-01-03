@@ -1,7 +1,12 @@
 package com.hardzei.coronavirusapp.viewmodel
 
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 abstract class BaseViewModel : ViewModel() {
@@ -51,7 +56,7 @@ abstract class BaseViewModel : ViewModel() {
     private inline fun <P> doCoroutineWork(
         crossinline doOnAsyncBlock: suspend CoroutineScope.() -> P,
         coroutineScope: CoroutineScope,
-        context: CoroutineContext
+        context: CoroutineContext,
     ) {
         coroutineScope.launch {
             withContext(context) {

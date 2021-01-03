@@ -2,6 +2,7 @@ package com.hardzei.coronavirusapp.koin
 
 import android.app.Application
 import androidx.room.Room
+import com.hardzei.coronavirusapp.data.api.ApiFactory
 import com.hardzei.coronavirusapp.data.database.CountryDao
 import com.hardzei.coronavirusapp.data.database.CountryDatabase
 import com.hardzei.coronavirusapp.data.repository.Repository
@@ -12,6 +13,10 @@ import com.hardzei.coronavirusapp.viewmodel.DetailCountryViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+
+val retrofitModule = module {
+    single { ApiFactory }
+}
 
 val databaseModule = module {
 
@@ -31,10 +36,10 @@ val databaseModule = module {
 
 val repositoryModule = module {
 
-    fun provideRepository(dao: CountryDao): Repository {
-        return Repository(dao)
+    fun provideRepository(dao: CountryDao, apiFactory: ApiFactory): Repository {
+        return Repository(dao, apiFactory)
     }
-    factory { provideRepository(get()) }
+    factory { provideRepository(get(), get()) }
 }
 
 val detailCountryViewModelModule = module {

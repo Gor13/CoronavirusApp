@@ -1,5 +1,6 @@
 package com.hardzei.coronavirusapp.view.screens.countrieslistscreen
 
+import android.graphics.drawable.Animatable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,16 +13,23 @@ import android.widget.AdapterView
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.hardzei.coronavirusapp.R
+import com.hardzei.coronavirusapp.SORTED_BY_ALPHABET
+import com.hardzei.coronavirusapp.SORTED_BY_TOTAL_CONFIRMED
+import com.hardzei.coronavirusapp.SORTED_BY_TOTAL_DEATHS
+import com.hardzei.coronavirusapp.SORTED_BY_TOTAL_RECOVERED
+import com.hardzei.coronavirusapp.SUCCESS_STATUS
+import com.hardzei.coronavirusapp.UPDATED_STATUS
 import com.hardzei.coronavirusapp.view.adapters.CountryListAdapter
 import com.hardzei.coronavirusapp.view.formatToStringWithDiv
-import com.hardzei.coronavirusapp.view.screens.detailcountryscreen.DetailCountryScreenFragment
-import com.hardzei.coronavirusapp.view.screens.settingscreen.SettingsScreenFragment
 import com.hardzei.coronavirusapp.viewmodel.CountriesListViewModel
-import kotlinx.android.synthetic.main.fragment_main_screen.*
+import kotlinx.android.synthetic.main.fragment_countries_list_screen.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CountriesListScreenFragment : Fragment() {
@@ -30,6 +38,7 @@ class CountriesListScreenFragment : Fragment() {
     private lateinit var adapter: CountryListAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var spinner: Spinner
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,15 +52,13 @@ class CountriesListScreenFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.settings_item) {
-            parentFragmentManager
-                .beginTransaction()
-                .setCustomAnimations(R.animator.back_animator, R.animator.front_animator)
-                .replace(
-                    R.id.frame_container,
-                    SettingsScreenFragment()
-                ).addToBackStack(MAIN_SCREEN_FRAGMENT_TAG)
-                .commit()
+        when (item.itemId) {
+            R.id.settings_item -> {
+                navController.navigate(R.id.open_settings_screen_fragment)
+            }
+            R.id.help_item -> {
+                navController.navigate(R.id.viewPagerHelpFragment)
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -59,14 +66,17 @@ class CountriesListScreenFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main_screen, container, false)
+        return inflater.inflate(R.layout.fragment_countries_list_screen, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        navController = Navigation.findNavController(view)
+
         recyclerView = recyclerViewWithCountries
         spinner = spinner_with_sort_items
 
@@ -76,45 +86,60 @@ class CountriesListScreenFragment : Fragment() {
         initListeners()
         initObservers()
 
-        val scale = requireContext().resources.displayMetrics.density
-        recyclerView.cameraDistance = DISTANCE_MARGIN * scale
+        // change title from manifest on current title of fragment
+        activity?.setTitle(R.string.statistic_in_world)
     }
 
     private fun initObservers() {
-        countriesListViewModel.allCountries.observe(viewLifecycleOwner, Observer { countries ->
-            // Update the cached copy of the words in the adapter.
-            Log.d("TEST1", countries.toString())
+        countriesListViewModel.allCountries.observe(
+            viewLifecycleOwner,
+            Observer { countries ->
+                // Update the cached copy of the words in the adapter.
 
-            if (countries.isNotEmpty()) {
-                countries?.let { adapter.setContries(it) }
-            }
-        })
-        countriesListViewModel.global.observe(viewLifecycleOwner, Observer { global ->
+                Log.d("TEST1", countries.toString())
 
-            if (global.isNotEmpty()) {
-                casesTV.text = global[0].totalConfirmed.formatToStringWithDiv()
-                deathsTV.text = global[0].totalDeaths.formatToStringWithDiv()
-                recoveredTV.text = global[0].totalRecovered.formatToStringWithDiv()
+                if (countries.isNotEmpty()) {
+                    countries?.let { adapter.setContries(it) }
+                }
             }
-            Log.d("TEST2", global.toString())
-        })
-        countriesListViewModel.errors.observe(viewLifecycleOwner, Observer { error ->
-            when (error) {
-                "success" -> Toast.makeText(
-                    context,
-                    getString(R.string.update_success),
-                    Toast.LENGTH_LONG
-                )
-                    .show()
-                else -> Toast.makeText(
-                    context,
-                    getString(R.string.internet_error) + error,
-                    Toast.LENGTH_LONG
-                )
-                    .show()
-            }
+        )
+        countriesListViewModel.global.observe(
+            viewLifecycleOwner,
+            Observer { global ->
 
-        })
+                if (global.isNotEmpty()) {
+                    casesTV.text = global[0].totalConfirmed.formatToStringWithDiv()
+                    deathsTV.text = global[0].totalDeaths.formatToStringWithDiv()
+                    recoveredTV.text = global[0].totalRecovered.formatToStringWithDiv()
+                }
+
+                Log.d("TEST2", global.toString())
+            }
+        )
+        countriesListViewModel.errors.observe(
+            viewLifecycleOwner,
+            Observer { error ->
+                when (error) {
+                    UPDATED_STATUS ->
+                        Toast.makeText(
+                            context,
+                            getString(R.string.update_success),
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                    SUCCESS_STATUS -> {
+                        // Do nothing
+                    }
+                    else ->
+                        Toast.makeText(
+                            context,
+                            getString(R.string.internet_error) + error,
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                }
+            }
+        )
     }
 
     private fun initListeners() {
@@ -122,15 +147,14 @@ class CountriesListScreenFragment : Fragment() {
         adapter.onLongItemClickListener = object : CountryListAdapter.OnLongItemClickListener {
 
             override fun onLongItemClick(id: Int) {
+
                 Log.d("TEST-ID", id.toString())
-                parentFragmentManager.beginTransaction()
-                    .setCustomAnimations(R.animator.back_animator, R.animator.front_animator)
-                    .replace(
-                        R.id.frame_container, DetailCountryScreenFragment.newInstance(
-                            id
-                        )
-                    ).addToBackStack(MAIN_SCREEN_FRAGMENT_TAG)
-                    .commit()
+
+                val bundle = bundleOf("countryId" to id)
+                navController.navigate(
+                    R.id.action_fragmentMainScreen_to_fragmentDetaiScreen,
+                    bundle
+                )
             }
         }
         spinner_with_sort_items.onItemSelectedListener =
@@ -140,9 +164,11 @@ class CountriesListScreenFragment : Fragment() {
                     parent: AdapterView<*>?,
                     itemSelected: View?,
                     selectedItemPosition: Int,
-                    selectedId: Long
+                    selectedId: Long,
                 ) {
+
                     Log.d("TEST_ITEM", selectedItemPosition.toString())
+
                     when (selectedItemPosition) {
                         0 -> countriesListViewModel.getSortedCountries(SORTED_BY_ALPHABET)
                         1 -> countriesListViewModel.getSortedCountries(SORTED_BY_TOTAL_CONFIRMED)
@@ -155,31 +181,36 @@ class CountriesListScreenFragment : Fragment() {
                     return
                 }
             }
-        searchSV.setOnQueryTextListener(object :
-            SearchView.OnQueryTextListener {
+        searchSV.setOnQueryTextListener(
+            object :
+                SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    return false
+                }
 
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    Log.d("TEST", "SEARCH_CLicked")
+                    adapter.filter.filter(newText)
+                    return false
+                }
             }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                Log.d("TEST", "SEARCH_CLicked")
-                adapter.filter.filter(newText)
-                return false
-            }
-        })
+        )
         updateIB.setOnClickListener {
-            countriesListViewModel.loadData()
+            updateStatistic()
+        }
+        casesTV.setOnClickListener {
+            updateStatistic()
+        }
+        deathsTV.setOnClickListener {
+            updateStatistic()
+        }
+        recoveredTV.setOnClickListener {
+            updateStatistic()
         }
     }
 
-    companion object {
-        private const val KEY_SPINNER_ITEM_POSITION = "KEY_SPINNER_ITEM_POSITION"
-        private const val DISTANCE_MARGIN = 8000
-        private const val MAIN_SCREEN_FRAGMENT_TAG = "MAIN_SCREEN_FRAGMENT_TAG"
-        private const val SORTED_BY_ALPHABET = "id ASC"
-        private const val SORTED_BY_TOTAL_CONFIRMED = "totalConfirmed DESC"
-        private const val SORTED_BY_TOTAL_DEATHS = "totalDeaths DESC"
-        private const val SORTED_BY_TOTAL_RECOVERED = "totalRecovered DESC"
+    private fun updateStatistic() {
+        countriesListViewModel.loadData()
+        (updateIB.drawable as Animatable).start()
     }
 }
