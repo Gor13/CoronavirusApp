@@ -10,10 +10,10 @@
 ...
 ### **Screenshots:**
 Main screen day/night:  
-![](screenshots/1_pic.PNG "Main screen day.") ![](screenshots/2_pic.PNG "Main screen night.")  
+![](screenshots/1_pic.png "Main screen day.") ![](screenshots/2_pic.png "Main screen night.")  
 Settins screen:  
-![](screenshots/3_pic.PNG "Settins screen.")  
+![](screenshots/3_pic.png "Settins screen.")  
 Detail screen:  
-![](screenshots/4_pic.PNG "Detail  screen.")
+![](screenshots/4_pic.png "Detail  screen.")
 Help screens:  
-![](screenshots/5_pic.PNG "Help screen.")![](screenshots/6_pic.PNG "Help screen.")![](screenshots/7_pic.PNG "Help screen.")         
+![](screenshots/5_pic.png "Help screen.")![](screenshots/6_pic.png "Help screen.")![](screenshots/7_pic.png "Help screen.")         
